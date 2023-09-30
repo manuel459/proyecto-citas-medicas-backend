@@ -10,5 +10,6 @@
         public string sNombre_Medico { get; set; }
         public string sNombre_Paciente { get; set; }
         public decimal dImporte_Total { get; set; }
+        public string? sEmail { get; set; }
     }
 }

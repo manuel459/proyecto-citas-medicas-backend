@@ -97,7 +97,8 @@ namespace Consulta_medica.Repository
                                 sNombre_Especialidad = e.Nombre,
                                 sNombre_Medico = m.Nombre + "" + m.sApellidos,
                                 sNombre_Paciente = p.Nomp + " " + p.Apellidos,
-                                dImporte_Total = pagos.dImporte_Total
+                                dImporte_Total = pagos.dImporte_Total,
+                                sEmail = pagos.sEmail
                             }).FirstOrDefault();
 
             //UPDATE URL BASE PAGO

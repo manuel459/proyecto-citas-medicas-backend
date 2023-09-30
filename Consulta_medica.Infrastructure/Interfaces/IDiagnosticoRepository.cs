@@ -1,13 +1,11 @@
 ﻿using Consulta_medica.Dto.Request;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Consulta_medica.Interfaces
 {
     public interface IDiagnosticoRepository
     {
-        public Task<bool> getUpdDiagnostico(DiagnosticoRequestPdfDto request);
+        public Task<bool> getUpdDiagnostico(DiagnosticoRequestPdfDto request, List<IFormFile> files);
+        int getIdHistoricMedik(int nId_Cita);
     }
 }

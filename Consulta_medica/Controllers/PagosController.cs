@@ -4,6 +4,7 @@ using Consulta_medica.Models;
 using Consulta_medica.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Consulta_medica.Controllers
 {
@@ -55,28 +56,33 @@ namespace Consulta_medica.Controllers
             Response response = new();
             try
             {
-                var cita = await _pagosRepository.InsertPagoCita(request);
-
-                if (!cita)
+                using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    response.exito = 0;
-                    response.mensaje = "Ocurrio un problema al momento de insertar el registro";
-                    return Ok(response);
-                }
+                    var cita = await _pagosRepository.InsertPagoCita(request);
 
-                var updateCita = await _pagosRepository.UpdateEstadoPagoCita(request.sCod_Cita);
-                if (!updateCita)
-                {
-                    response.exito = 0;
-                    response.mensaje = "Ocurrio un problema al momento de actualizar el registro";
-                    return Ok(response);
-                }
+                    if (!cita)
+                    {
+                        response.exito = 0;
+                        response.mensaje = "Ocurrio un problema al momento de insertar el registro";
+                        return Ok(response);
+                    }
 
-                var boletaPago = _pagosRepository.getDocumentPagos(request);
+                    var updateCita = await _pagosRepository.UpdateEstadoPagoCita(request.sCod_Cita);
+                    if (!updateCita)
+                    {
+                        response.exito = 0;
+                        response.mensaje = "Ocurrio un problema al momento de actualizar el registro";
+                        return Ok(response);
+                    }
 
-                response.exito = 1;
-                response.mensaje = "Registro exitoso";
-                response.data = boletaPago;
+                    var boletaPago = _pagosRepository.getDocumentPagos(request);
+
+                    response.exito = 1;
+                    response.mensaje = "Registro exitoso";
+                    response.data = boletaPago;
+
+                    transaction.Complete();
+                }       
 
             }
             catch (System.Exception ex)

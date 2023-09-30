@@ -1,6 +1,8 @@
 ﻿using Consulta_medica.Application.Interfaces;
 using Consulta_medica.Application.Services;
 using Consulta_medica.Application.Validation;
+using Consulta_medica.Interfaces;
+using Consulta_medica.Repository;
 using Consulta_medica.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ namespace Consulta_medica.Application.Extensions
             services.AddScoped<IMedicosService, MedicosService>();
             services.AddScoped<IPacienteServices, PacienteService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IDiagnosticoService, DiagnosticoService>();
             services.AddScoped<ValidationPaciente>();
             services.AddScoped<ValidationMedik>();
             services.AddScoped<ValidationCitas>();

@@ -107,12 +107,23 @@ namespace Consulta_medica.Dto.Request
     public class HistoriaMedica
     {
         public int idCita { get; set; }
-        public string sNombre_Especialidad { get; set; }
-        public string sNombre_Medico { get; set; }
+        public string? sNombre_Especialidad { get; set; }
+        public string? sNombre_Medico { get; set; }
         public int Dnip { get; set; }
+        public string? sNumero_Telefono { get; set; }
         public string Nomp { get; set; }
         public DateTime Fecct { get; set; }
         public string Diagnostico { get; set; }
         public string Receta { get; set; }
+
+        [NotMapped]
+        public List<ListFile>? lUrlBase { get; set; }
+    }
+
+    public class ListFile 
+    {
+        public string? sUrl { get; set; }
+        public string? sType_File { get; set; }
+        public string? sFile_Name { get;set; }
     }
 }

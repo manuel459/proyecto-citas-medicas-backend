@@ -1,7 +1,7 @@
 ﻿using Consulta_medica.Dto.Response;
+using Consulta_medica.Infrastructure.Interfaces;
 using Consulta_medica.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -15,9 +15,11 @@ namespace Consulta_medica.Controllers
     public class ConfiguracionesController : ControllerBase
     {
         private IConfiguracionesRepository _configuraciones;
-        public ConfiguracionesController(IConfiguracionesRepository configuraciones) 
+        private IUnitOfWork _unitOfWork;
+        public ConfiguracionesController(IConfiguracionesRepository configuraciones, IUnitOfWork unitOfWork) 
         {
             _configuraciones = configuraciones;
+            _unitOfWork = unitOfWork;
         }
         [HttpGet]
         public async Task<IActionResult> getConfiguraciones([FromQuery] string sEntidad, [FromQuery] string sId) 
@@ -93,5 +95,6 @@ namespace Consulta_medica.Controllers
             }
             return Ok(orespuesta);
         }
+
     }
 }

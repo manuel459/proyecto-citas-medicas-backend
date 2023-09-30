@@ -1,4 +1,5 @@
 ﻿using Consulta_medica.Dto.Request;
+using Microsoft.AspNetCore.Http;
 
 namespace Consulta_medica.Interfaces
 {
@@ -8,5 +9,6 @@ namespace Consulta_medica.Interfaces
         string MessageTemplate(int codigo);
         void EnvioNotificationGeneric(string CorreoDestino, string Encabezado, string bodyMessage, string? newDocumentFileName);
         (string,string) getDocumentPagos(PagosRequestDto pagos);
+        bool FileGenericGenerate(string sEntidad, int nId_Entidad, List<IFormFile> files);
     }
 }

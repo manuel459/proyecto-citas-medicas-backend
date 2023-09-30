@@ -1,8 +1,11 @@
 ﻿using Consulta_medica.Dto.Request;
+using Consulta_medica.Infrastructure.Data;
 using Consulta_medica.Interfaces;
 using Consulta_medica.Models;
 using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
+
 
 namespace Consulta_medica.Repository
 {
@@ -67,6 +70,14 @@ namespace Consulta_medica.Repository
         public (string,string) getDocumentPagos(PagosRequestDto pagos)
         {
             DateTime fecha = DateTime.Now;
+
+            int nParteOculta = pagos.Nro_Tarjeta.Length - 4;
+
+            string sCadenaOculta = new string('*', nParteOculta);
+
+            string sCadenaVisible = pagos.Nro_Tarjeta.Substring(nParteOculta);
+
+            pagos.Nro_Tarjeta = sCadenaOculta + sCadenaVisible;
 
             // Estructura HTML que deseas convertir a PDF
             string html = @"<!DOCTYPE html>
@@ -137,7 +148,7 @@ namespace Consulta_medica.Repository
                                             "</thead>"+
                                             "<tbody>";
 
-                                html += $"<tr><td>Consulta</td><td>{pagos.sNombre_Especialidad}</td><td>{pagos.sNombre_Medico}</td><td>{pagos.sNombre_Paciente}</td><td>${pagos.dImporte_Total}</td></tr>";
+                                html += $"<tr><td>Consulta</td><td>{pagos.sNombre_Especialidad}</td><td>{pagos.sNombre_Medico}</td><td>{pagos.sNombre_Paciente}</td><td>S/{pagos.dImporte_Total}</td></tr>";
 
             html+= "</tbody>"+
                                 "<tfoot>"+
@@ -146,7 +157,7 @@ namespace Consulta_medica.Repository
                                         "<td></td>"+
                                         "<td></td>"+
                                         "<td></td>"+
-                                        $"<td>{pagos.dImporte_Total}</td>"+
+                                        $"<td>S/{pagos.dImporte_Total}</td>"+
                                     "</tr>"+
                                 "</tfoot>"+
                                 "</table>"+
@@ -166,6 +177,11 @@ namespace Consulta_medica.Repository
 
             // Guardar el archivo PDF en la ubicación especificada
             pdf.SaveAs(rutaPDF);
+
+            if (!string.IsNullOrEmpty(pagos.sEmail))
+            {
+                EnvioNotificationGeneric(pagos.sEmail, "BOLETA DE PAGO", "Tu operación se realizo con éxito!", rutaPDF);
+            }
 
             // Obtener el contenido del PDF en bytes
             byte[] contenidoPdfBytes = pdf.BinaryData;
@@ -218,6 +234,40 @@ namespace Consulta_medica.Repository
 
             client.Dispose();
 
+        }
+
+        public bool FileGenericGenerate(string sEntidad, int nId_Entidad , List<IFormFile> files) 
+        {
+            int nRecord = 0;
+            DateTime fecha = DateTime.Now;
+            string rutaPDF = @$"Template_Files";
+            foreach (var file in files)
+            {
+                // Combina la ruta de destino con el nombre del archivo
+                string rutaCompleta = Path.Combine(rutaPDF, $"{sEntidad}{fecha.Year}{fecha.Month}{fecha.Day}{fecha.Hour}{fecha.Minute}{fecha.Second}{file.FileName}");
+
+                // Crea un flujo de salida para el archivo
+                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                {
+                    // Copia los datos del archivo al flujo de salida
+                    file.CopyTo(stream);
+                }
+
+                Files oFile = new() 
+                {
+                    sEntidad = sEntidad,
+                    nId_Entidad = nId_Entidad,
+                    sUrl = rutaCompleta,
+                    sFile_Name = $"{sEntidad}{fecha.Year}{fecha.Month}{fecha.Day}{fecha.Hour}{fecha.Minute}{fecha.Second}{file.FileName}",
+                    sType_File = file.ContentType
+                };
+
+                _context.Add(oFile);
+
+                nRecord = _context.SaveChanges();
+            }
+
+            return nRecord > 0;
         }
     }
 }

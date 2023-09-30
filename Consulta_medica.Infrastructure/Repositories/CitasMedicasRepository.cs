@@ -127,26 +127,36 @@ namespace Consulta_medica.Repository
         }
         public async Task<IEnumerable<HistoriaMedica>> obtenerHistoriaMedica(int dnip) 
         {
+
             var obtenerCita = await (from h in _context.HistorialMedico
-                                     join e in _context.Especialidad
-                                     on h.Codes equals e.Codes
-                                     join m in _context.Medico
-                                     on h.Codmed equals m.Codmed
-                                     join p in _context.Paciente
-                                     on h.Dnip equals p.Dnip
-                                     where h.Dnip == dnip
-                                     orderby h.Fecct descending
-                                     select new HistoriaMedica
-                                     {
-                                         idCita = h.idCita,
-                                         sNombre_Especialidad = e.Nombre,
-                                         sNombre_Medico = m.Nombre,
-                                         Dnip = h.Dnip,
-                                         Nomp = p.Nomp,
-                                         Fecct = h.Fecct,
-                                         Diagnostico = h.Diagnostico,
-                                         Receta = h.Receta
-                                     }).ToListAsync();
+                                         join e in _context.Especialidad
+                                         on h.Codes equals e.Codes
+                                         join m in _context.Medico
+                                         on h.Codmed equals m.Codmed
+                                         join p in _context.Paciente
+                                         on h.Dnip equals p.Dnip
+                                         where h.Dnip == dnip
+                                         orderby h.Fecct descending
+                                         select new HistoriaMedica
+                                         {
+                                             idCita = h.idCita,
+                                             sNombre_Especialidad = e.Nombre,
+                                             sNombre_Medico = $"{m.Nombre} {m.sApellidos}",
+                                             Dnip = h.Dnip,
+                                             Nomp = $"{p.Nomp} {p.Apellidos}",
+                                             sNumero_Telefono = p.Numero.ToString(),
+                                             Fecct = h.Fecct,
+                                             Diagnostico = h.Diagnostico,
+                                             Receta = h.Receta,
+                                             lUrlBase =  (from f in _context.files
+                                                          where f.nId_Entidad == h.Id
+                                                          select new ListFile 
+                                                          {
+                                                              sType_File = f.sType_File,
+                                                              sUrl = Convert.ToBase64String(File.ReadAllBytes(f.sUrl)),
+                                                              sFile_Name = f.sFile_Name
+                                                          }).ToList() 
+                                         }).ToListAsync();
 
             return obtenerCita;
         }

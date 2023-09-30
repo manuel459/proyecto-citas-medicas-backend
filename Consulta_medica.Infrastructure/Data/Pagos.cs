@@ -15,6 +15,9 @@ namespace Consulta_medica.Models
         public int nDni { get; set; }
         public DateTime dCreate_Datetime { get; set; }
         public decimal dImporte_Total { get; set; }
-        public string urlBase { get; set; } 
+        public string? urlBase { get; set; }
+        [NotMapped]
+        public string? sEmail { get; set; }
+
     }
 }

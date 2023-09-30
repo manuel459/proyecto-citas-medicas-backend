@@ -33,6 +33,7 @@ namespace Consulta_medica.Models
         public virtual DbSet<Permisos_Roles> Permisos_Roles { get; set; }
         public virtual DbSet<Pagos> Pagos { get; set; }
         public virtual DbSet<Configs> configs { get; set; }
+        public virtual DbSet<Files> files { get; set; }
         //sp
         public virtual DbSet<ConfiguracionesResponse> ConfiguracionesResponses { get; set; }
         public virtual DbSet<CitasQueryDto> CitasQueryDtos { get; set; }
@@ -44,7 +45,6 @@ namespace Consulta_medica.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=DESKTOP-NHMNTAF\\SQLEXPRESS;Database=consulta_medica;Trusted_Connection=True;TrustServerCertificate=True");
             }
         }
@@ -67,7 +67,9 @@ namespace Consulta_medica.Models
                 entity.HasNoKey();
             });
 
-            modelBuilder.Entity<Configs>(entiry => { entiry.ToTable("configs"); });
+            modelBuilder.Entity<Configs>(entity => { entity.ToTable("configs"); });
+
+            modelBuilder.Entity<Files>(entity => { entity.ToTable("Files"); });
 
             modelBuilder.Entity<Permisos>(entity =>
             {

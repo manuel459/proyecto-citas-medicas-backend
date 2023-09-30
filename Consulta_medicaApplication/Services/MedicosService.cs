@@ -2,10 +2,7 @@
 using Consulta_medica.Dto.Request;
 using Consulta_medica.Dto.Response;
 using Consulta_medica.Infrastructure.Interfaces;
-using Consulta_medica.Models;
 using Consulta_medica.Validation;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 
 namespace Consulta_medica.Application.Services
 {

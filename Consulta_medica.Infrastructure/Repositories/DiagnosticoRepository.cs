@@ -2,6 +2,7 @@
 using Consulta_medica.Infrastructure.Enum;
 using Consulta_medica.Interfaces;
 using Consulta_medica.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Consulta_medica.Repository
@@ -14,7 +15,7 @@ namespace Consulta_medica.Repository
             _context = context;
         }
 
-        public async Task<bool> getUpdDiagnostico(DiagnosticoRequestPdfDto request) 
+        public async Task<bool> getUpdDiagnostico(DiagnosticoRequestPdfDto request, List<IFormFile> files) 
         {
             var list = await _context.Citas.Where(x => x.Id == request.idCita).ToListAsync();
 
@@ -35,7 +36,14 @@ namespace Consulta_medica.Repository
             _context.HistorialMedico.Add(ohistoria);
             var recordAffected = await _context.SaveChangesAsync();
 
+
             return recordAffected > 0;
+        }
+
+        public int getIdHistoricMedik(int nId_Cita) 
+        {
+            var result = _context.HistorialMedico.FirstOrDefault(x => x.idCita == nId_Cita);
+            return result.Id;
         }
 
     }

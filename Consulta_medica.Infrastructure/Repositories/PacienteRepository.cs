@@ -1,4 +1,5 @@
 ﻿using Consulta_medica.Dto.Request;
+using Consulta_medica.Dto.Response;
 using Consulta_medica.Infrastructure.SP;
 using Consulta_medica.Interfaces;
 using Consulta_medica.Models;
@@ -20,7 +21,7 @@ namespace Consulta_medica.Repository
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<Paciente>> GetPacientes(RequestGenericFilter request, string usuario)
+        public async Task<IEnumerable<PacienteResponseDto>> GetPacientes(RequestGenericFilter request, string usuario)
         {
 
             using var connection = new SqlConnection(_configuration.GetConnectionString("consulta_medica"));
@@ -37,8 +38,9 @@ namespace Consulta_medica.Repository
                 sUsuario = usuario
             };
 
-            var result = await connection.QueryAsync<Paciente>(storeProcedure.SP_LISTADO_PACIENTE, parameters, commandType: CommandType.StoredProcedure);
+            var result = await connection.QueryAsync<PacienteResponseDto>(storeProcedure.SP_LISTADO_PACIENTE, parameters, commandType: CommandType.StoredProcedure);
 
+            connection.Close();
             return result;
         }
 
