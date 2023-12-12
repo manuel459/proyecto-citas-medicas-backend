@@ -284,6 +284,9 @@ namespace Consulta_medica.Application.Services
             try
             {
                 var response = await _unitOfWork.Citas.obtenerHistoriaMedica(dnip);
+
+                response.ForEach(x => x.lUrlBase.ForEach(x => x.sUrl = _unitOfWork.generarPDF.getObjectS3(x.sUrl)));
+
                 if (response.Count() > 0)
                 {
                     orespuesta.exito = 1;
@@ -332,7 +335,7 @@ namespace Consulta_medica.Application.Services
 
 
                     //ENVIO DE NOTIFICACIÓN A MÉDICO
-                    var medicos_con_citas_pendientes = requestList.Select(x => new { x.Codmed, x.NombreMedico, x.CorreoElectronicoMedico }).Distinct().ToList();
+                    var medicos_con_citas_pendientes = requestList.OrderBy(x => x.Hora).Select(x => new { x.Codmed, x.NombreMedico, x.CorreoElectronicoMedico }).Distinct().ToList();
 
                     foreach (var medico in medicos_con_citas_pendientes)
                     {
@@ -371,7 +374,7 @@ namespace Consulta_medica.Application.Services
                         "           </table>\r\n" +
                         "          </body>\r\n" +
                         "         </html>\r\n";
-
+                        //ENVIO DE NOTIFICACIÓN
                         _unitOfWork.generarPDF.EnvioNotificationGeneric(medico.CorreoElectronicoMedico, "CITAS PENDIENTES", bodyMessage, null);
                     }
 

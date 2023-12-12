@@ -11,7 +11,7 @@ namespace Consulta_medica.Interfaces
         Task<bool> DeleteCitas(int id);
         Task<Horarios> consultarHorario(DatosRequestCitasDto request);
         Task<IEnumerable<TimeSpan>> citasRegistradas(DatosRequestCitasDto request);
-        Task<IEnumerable<HistoriaMedica>> obtenerHistoriaMedica(int dnip);
+        Task<List<HistoriaMedica>> obtenerHistoriaMedica(int dnip);
         Task<IEnumerable<CitasRequestDto>> getCitasPending(DateTime fechaMañana);
         Task<IEnumerable<CitasPendientesMedico>> getCitasPendingByCodmed(DateTime FechaPrevia, string Codmed);
     }

@@ -1,20 +1,31 @@
-﻿using Consulta_medica.Dto.Request;
+﻿using Amazon.S3.Transfer;
+using Amazon.S3;
+using Consulta_medica.Dto.Request;
 using Consulta_medica.Infrastructure.Data;
 using Consulta_medica.Interfaces;
 using Consulta_medica.Models;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Http;
 using System.Net.Mail;
-
+using IronPdf.Forms;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Configuration;
+using Amazon;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Consulta_medica.Repository
 {
     public class GenerarPDF : IGenerarPDF
     {
         private readonly consulta_medicaContext _context;
-        public GenerarPDF(consulta_medicaContext context)
+        private readonly IConfiguration _configuration;
+        private readonly AmazonS3Client s3_client;
+        private const double DURATION = 5;
+        public GenerarPDF(consulta_medicaContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+            s3_client = new AmazonS3Client($"{_configuration["S3:KEY"]}", $"{_configuration["S3:SECRET_KEY"]}", RegionEndpoint.USEast1);
         }
 
         public string GenerateInvestorDocument(CitasRequestDto contractInfo)
@@ -243,22 +254,24 @@ namespace Consulta_medica.Repository
             string rutaPDF = @$"Template_Files";
             foreach (var file in files)
             {
-                // Combina la ruta de destino con el nombre del archivo
-                string rutaCompleta = Path.Combine(rutaPDF, $"{sEntidad}{fecha.Year}{fecha.Month}{fecha.Day}{fecha.Hour}{fecha.Minute}{fecha.Second}{file.FileName}");
+                //string accessKey = "AKIASMLDJYSXNYJBKCNL";
+                //string secretKey = "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";
+                //string bucketName = "repositorio-pry-clinico";
+                string fileName = $"{sEntidad}{fecha.Year}{fecha.Month}{fecha.Day}{fecha.Hour}{fecha.Minute}{fecha.Second}{file.FileName}";
+                string destinefilePath = $"historias_medicas/{fileName}";
 
-                // Crea un flujo de salida para el archivo
-                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                using (var stream = file.OpenReadStream())
                 {
-                    // Copia los datos del archivo al flujo de salida
-                    file.CopyTo(stream);
+                    var fileTransferUtility = new TransferUtility(s3_client);
+                    fileTransferUtility.Upload(stream, $"{_configuration["S3:BUCKET_NAME"]}", destinefilePath);
                 }
 
                 Files oFile = new() 
                 {
                     sEntidad = sEntidad,
                     nId_Entidad = nId_Entidad,
-                    sUrl = rutaCompleta,
-                    sFile_Name = $"{sEntidad}{fecha.Year}{fecha.Month}{fecha.Day}{fecha.Hour}{fecha.Minute}{fecha.Second}{file.FileName}",
+                    sUrl = destinefilePath,
+                    sFile_Name = fileName,
                     sType_File = file.ContentType
                 };
 
@@ -269,5 +282,29 @@ namespace Consulta_medica.Repository
 
             return nRecord > 0;
         }
+
+        public string getObjectS3(string objectKey)
+        {
+            string url = "";
+
+            if (!objectKey.IsNullOrEmpty())
+            {
+                var request = new GetPreSignedUrlRequest
+                {
+                    BucketName = $"{_configuration["S3:BUCKET_NAME"]}",
+                    Key = objectKey,
+                    Verb = HttpVerb.GET,
+                    Expires = DateTime.UtcNow.AddMinutes(10)
+                };
+
+                url = s3_client.GetPreSignedURL(request);
+            }
+           
+            return url;
+
+        }
+
+
+
     }
 }

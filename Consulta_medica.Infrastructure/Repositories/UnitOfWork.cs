@@ -42,7 +42,7 @@ namespace Consulta_medica.Infrastructure.Repositories
             Citas = new CitasMedicasRepository(_context,_config);
             Configuraciones = new ConfiguracionesRepository(_context);
             Diagnostico = new DiagnosticoRepository(_context);
-            generarPDF = new GenerarPDF(_context);
+            generarPDF = new GenerarPDF(_context, _config);
             Medicos = new MedicosRepository(_context,_config);
             Pacientes = new PacienteRepository(_context, _config);
             User = new UserServiceRepository(_context, _config);

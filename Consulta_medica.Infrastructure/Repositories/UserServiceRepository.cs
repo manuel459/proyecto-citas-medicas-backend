@@ -7,11 +7,8 @@ using Consulta_medica.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using System.Linq;
 
 namespace Consulta_medica.Repository
 {
@@ -94,7 +91,17 @@ namespace Consulta_medica.Repository
 
         public async Task<bool> UpdateUser(Usuarios request)
         {
-            _context.Update(request);
+            var result = await _context.Usuarios.FirstOrDefaultAsync(x => x.nIdUser.Equals(request.nIdUser));
+
+            result.nDni = request.nDni;
+            result.nIptip = request.nIptip;
+            result.sNombres = request.sNombres;
+            result.sApellidos = request.sApellidos;
+            result.nIdUser = request.nIdUser;
+            result.dNac = request.dNac;
+            result.sCorreo = request.sCorreo;
+            result.sSexo = request.sSexo;
+            result.sPswd = request.sPswd ?? result.sPswd;
 
             var recordAffected = await _context.SaveChangesAsync();
 

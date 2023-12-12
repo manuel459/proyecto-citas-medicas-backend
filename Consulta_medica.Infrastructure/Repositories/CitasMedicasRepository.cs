@@ -125,7 +125,7 @@ namespace Consulta_medica.Repository
                                           select c.Hora).ToListAsync();
             return citasRegistradas;
         }
-        public async Task<IEnumerable<HistoriaMedica>> obtenerHistoriaMedica(int dnip) 
+        public async Task<List<HistoriaMedica>> obtenerHistoriaMedica(int dnip) 
         {
 
             var obtenerCita = await (from h in _context.HistorialMedico
@@ -153,10 +153,11 @@ namespace Consulta_medica.Repository
                                                           select new ListFile 
                                                           {
                                                               sType_File = f.sType_File,
-                                                              sUrl = Convert.ToBase64String(File.ReadAllBytes(f.sUrl)),
+                                                              sUrl = f.sUrl,
                                                               sFile_Name = f.sFile_Name
                                                           }).ToList() 
                                          }).ToListAsync();
+
 
             return obtenerCita;
         }

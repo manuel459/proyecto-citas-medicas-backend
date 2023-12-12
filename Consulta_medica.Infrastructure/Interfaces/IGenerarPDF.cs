@@ -10,5 +10,6 @@ namespace Consulta_medica.Interfaces
         void EnvioNotificationGeneric(string CorreoDestino, string Encabezado, string bodyMessage, string? newDocumentFileName);
         (string,string) getDocumentPagos(PagosRequestDto pagos);
         bool FileGenericGenerate(string sEntidad, int nId_Entidad, List<IFormFile> files);
+        string getObjectS3(string objectKey);
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Consulta_medica.Application.Interfaces;
 using Consulta_medica.Application.Services;
 using Consulta_medica.Application.Validation;
-using Consulta_medica.Interfaces;
-using Consulta_medica.Repository;
 using Consulta_medica.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -16,7 +16,7 @@ namespace Consulta_medica.Models
         public string sSexo { get; set; }
         public DateTime? dNac { get; set; }
         public string sCorreo { get; set; }
-        public string sPswd { get; set; }
+        public string? sPswd { get; set; }
         public int? nDni { get; set; }
     }
 }

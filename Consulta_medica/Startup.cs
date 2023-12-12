@@ -56,7 +56,7 @@ namespace Consulta_medica
                 });
             });
 
-            services.ConfigureHangFire(Configuration);
+            services.ConfigureHangFire(Configuration);  
 
             //services.AddFluentValidation(options =>
             //{
