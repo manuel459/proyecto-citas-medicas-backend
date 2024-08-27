@@ -16,6 +16,7 @@ namespace Consulta_medica.Application.Extensions
             services.AddScoped<IPacienteServices, PacienteService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDiagnosticoService, DiagnosticoService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ValidationPaciente>();
             services.AddScoped<ValidationMedik>();
             services.AddScoped<ValidationCitas>();

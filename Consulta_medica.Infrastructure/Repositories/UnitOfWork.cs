@@ -28,6 +28,8 @@ namespace Consulta_medica.Infrastructure.Repositories
 
         public IUserServiceRepository User { get; private set; }
 
+        public INotificationRepository Notification { get; private set; }
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);
@@ -46,6 +48,7 @@ namespace Consulta_medica.Infrastructure.Repositories
             Medicos = new MedicosRepository(_context,_config);
             Pacientes = new PacienteRepository(_context, _config);
             User = new UserServiceRepository(_context, _config);
+            Notification = new NotificationRepository(_context);
         }
     }
 }

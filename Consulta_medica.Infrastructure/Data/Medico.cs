@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Consulta_medica.Infrastructure.Data;
+using System;
 using System.Collections.Generic;
 
 // Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.

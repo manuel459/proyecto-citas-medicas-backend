@@ -14,5 +14,6 @@ namespace Consulta_medica.Interfaces
         Task<Medico> BusinessHours(string Codmed);
         Task<IEnumerable<HorarioDto>> ObtenerInfoHorario(string Codmed);
         string getEmailMedico(string CodMed);
+        Task<Medico> getById(string id_medico);
     }
 }

@@ -8,13 +8,13 @@ namespace Consulta_medica.Extensions.Hangfire
 {
     public static class HangfireExtension
     {
-        public static IServiceProvider HangfireExecuteJob(this IServiceProvider serviceProvider, IRecurringJobManager recurringJobManager) 
-        {
-            var CitasService = serviceProvider.GetService<ICitasMedicasService>();
+        //public static IServiceProvider HangfireExecuteJob(this IServiceProvider serviceProvider, IRecurringJobManager recurringJobManager) 
+        //{
+        //    var CitasService = serviceProvider.GetService<ICitasMedicasService>();
 
-            recurringJobManager.AddOrUpdate(JobName.NOTI_RECORDATORIO_CITA, () => CitasService.RecordatorioNotification(), Cron.Daily(6+5));
+        //    //recurringJobManager.AddOrUpdate(JobName.NOTI_RECORDATORIO_CITA, () => CitasService.RecordatorioNotification(), Cron.Daily(6+5));
 
-            return serviceProvider;
-        }
+        //    return serviceProvider;
+        //}
     }
 }

@@ -6,6 +6,7 @@ using Consulta_medica.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Materiagris.Smart.Infrastructure.Extensions
 {
@@ -14,10 +15,26 @@ namespace Materiagris.Smart.Infrastructure.Extensions
         public static IServiceCollection AddInjectionInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var assembly = typeof(consulta_medicaContext).Assembly.FullName;
-            services.AddDbContext<consulta_medicaContext>(
-                op => op.UseSqlServer(
-                    configuration.GetConnectionString("consulta_medica"), b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
+            //services.AddDbContext<consulta_medicaContext>(
+            //    op => op.UseSqlServer(configuration.GetConnectionString("consulta_medica"), b => b.MigrationsAssembly(assembly))
+            //    , ServiceLifetime.Transient);
 
+
+            services.AddDbContext<consulta_medicaContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("consulta_medica"), sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(assembly);
+                    //sqlOptions.EnableRetryOnFailure(
+                    //    maxRetryCount: 5, // Número máximo de reintentos (puedes ajustar este número)
+                    //    maxRetryDelay: TimeSpan.FromSeconds(30), // Tiempo máximo de espera entre reintentos
+                    //    errorNumbersToAdd: null // Lista opcional de números de error adicionales a considerar transitorios
+                    //);
+                });
+
+            }, ServiceLifetime.Transient);
+
+            services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<ICitasMedicasReporteRepository, CitasMedicasReporteRepository>();
             services.AddScoped<ICitasMedicasRepository, CitasMedicasRepository>();
             services.AddScoped<IConfiguracionesRepository, ConfiguracionesRepository>();

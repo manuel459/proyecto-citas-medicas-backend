@@ -215,6 +215,9 @@ namespace Consulta_medica.Repository
                 case 1:
                     message = $"<b>Buen dia estimado(a) NOMBRE_PACIENTE , recordatorio que su cita médica es el FECHA_CITA a las HORA_CITA<b>";
                     break;
+                case 2:
+                    message = $"El <strong>ROL_RECEPTOR NOMBRE_RECEPTOR</strong>, le ha generado una cita el dia <strong>FECHA_CITA</strong> a las <strong>HORA_CITA</strong>, con el paciente <strong>NOMBRE_PACIENTE</strong>";
+                    break;
                 default:
                     break;
             }

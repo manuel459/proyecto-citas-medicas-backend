@@ -34,6 +34,7 @@ namespace Consulta_medica.Models
         public virtual DbSet<Pagos> Pagos { get; set; }
         public virtual DbSet<Configs> configs { get; set; }
         public virtual DbSet<Files> files { get; set; }
+        public virtual DbSet<Notifications> Notifications { get; set; }
         //sp
         public virtual DbSet<ConfiguracionesResponse> ConfiguracionesResponses { get; set; }
         public virtual DbSet<CitasQueryDto> CitasQueryDtos { get; set; }
@@ -43,10 +44,6 @@ namespace Consulta_medica.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-NHMNTAF\\SQLEXPRESS;Database=consulta_medica;Trusted_Connection=True;TrustServerCertificate=True");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -362,6 +359,73 @@ namespace Consulta_medica.Models
                     .HasColumnName("nomtip")
                     .HasMaxLength(20)
                     .IsUnicode(false);
+            });
+
+            // Notification entity configuration
+            modelBuilder.Entity<Notifications>(entity =>
+            {
+                entity.HasKey(n => n.Id);
+
+                entity.Property(n => n.Message)
+                .HasColumnName("message")
+                      .HasMaxLength(255);
+
+                entity.Property(n => n.State)
+                .HasColumnName("state");
+
+                entity.Property(n => n.id_rol_receptor)
+                .HasColumnName("id_rol_receptor")
+                      .HasColumnType("CHAR(4)");
+
+                entity.Property(n => n.id_medico_receptor)
+                .HasColumnName("id_medico_receptor")
+                      .HasColumnType("CHAR(4)");
+
+                entity.Property(n => n.id_user_receptor)
+                .HasColumnName("id_user_receptor")
+                      .HasColumnType("int");
+
+                entity.Property(n => n.id_rol_emisor)
+                .HasColumnName("id_rol_emisor")
+                      .HasColumnType("CHAR(4)");
+
+                entity.Property(n => n.id_user_emisor)
+                .HasColumnName("id_user_emisor")
+                      .HasColumnType("int");
+
+                entity.Property(n => n.CreatedAt)
+                .HasColumnName("createdAt")
+                      .IsRequired()
+                      .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(n => n.UpdatedAt)
+                .HasColumnName("updatedAt");
+
+                // Relationships
+                entity.HasOne(n => n.UserReceptor)
+                      .WithMany()
+                      .HasForeignKey(n => n.id_user_receptor)
+                      .HasConstraintName("FK_Notifications_User_receptor");
+
+                entity.HasOne(n => n.MedicoReceptor)
+                      .WithMany()
+                      .HasForeignKey(n => n.id_medico_receptor)
+                      .HasConstraintName("FK_Notifications_Medico_receptor");
+
+                entity.HasOne(n => n.TipoUsuarioReceptor)
+                      .WithMany()
+                      .HasForeignKey(n => n.id_rol_receptor)
+                      .HasConstraintName("FK_Notifications_TipoUser_receptor");
+
+                entity.HasOne(n => n.UserEmisor)
+                      .WithMany()
+                      .HasForeignKey(n => n.id_user_emisor)
+                      .HasConstraintName("FK_Notifications_User_emisor");
+
+                entity.HasOne(n => n.TipoUsuarioEmisor)
+                     .WithMany()
+                     .HasForeignKey(n => n.id_rol_emisor)
+                     .HasConstraintName("FK_Notifications_TipoUser_emisor");
             });
 
             OnModelCreatingPartial(modelBuilder);

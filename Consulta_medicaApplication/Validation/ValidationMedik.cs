@@ -1,13 +1,18 @@
 ﻿using Consulta_medica.Dto.Request;
 using Consulta_medica.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace Consulta_medica.Validation
 {
     public class ValidationMedik : AbstractValidator<MedicoRequestDto>
     {
-        public ValidationMedik() 
+        private readonly consulta_medicaContext _dbContext;
+        public ValidationMedik(consulta_medicaContext context) 
         {
+            _dbContext = context;
+
             RuleFor(x => x.Nombre)
                 .NotEmpty().WithMessage("Por favor ingresa el primer nombre")
                 .NotNull();
@@ -20,22 +25,16 @@ namespace Consulta_medica.Validation
                     RuleFor(x => x.Dni)
                     .Must(x => x <= 99999999 && x >= 10000000).WithMessage("El campo Dni debe contener 8 caracteres");
                 }).Must((Medico,id) =>
-                {
-                    using (consulta_medicaContext db = new consulta_medicaContext())
-                    {
-                        var lista = db.Medico.Where(x => x.Dni == id && x.Codmed != Medico.Codmed).Select(x => x.Dni);
-                        return (!lista.Contains(id));
-                    }
+                { 
+                    var lista = _dbContext.Medico.Where(x => x.Dni == id && x.Codmed != Medico.Codmed).Select(x => x.Dni);
+                    return (!lista.Contains(id));
                 }).WithMessage("Dni existente");
 
             RuleFor(x => x.Correo)
                .Must((Medico, id) =>
                {
-                   using (consulta_medicaContext db = new consulta_medicaContext())
-                   {
-                       var lista = db.Medico.Where(x => x.Correo == Medico.Correo && x.Codmed != Medico.Codmed).Select(x => x.Correo);
-                       return (!lista.Contains(Medico.Correo));
-                   }
+                    var lista = _dbContext.Medico.Where(x => x.Correo == Medico.Correo && x.Codmed != Medico.Codmed).Select(x => x.Correo);
+                    return (!lista.Contains(Medico.Correo));
                }).WithMessage("Correo existente");
 
             RuleFor(x => x.Sexo)

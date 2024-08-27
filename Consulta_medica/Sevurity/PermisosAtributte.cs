@@ -25,6 +25,14 @@ namespace Consulta_medica.Sevurity
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+            var _dbContext = (consulta_medicaContext)context.HttpContext.RequestServices.GetService(typeof(consulta_medicaContext));
+
+            if (_dbContext == null)
+            {
+                context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return;
+            }
+
             string authorizationHeader = context.HttpContext.Request.Headers["Authorization"];
 
             string token = authorizationHeader.Substring("Bearer ".Length);
@@ -32,8 +40,7 @@ namespace Consulta_medica.Sevurity
             var jwtToken = new JwtSecurityToken(token);
             var idTip = jwtToken.Payload.FirstOrDefault(x => x.Key.Equals("actort")).Value;
 
-            using (var _dbContext = new consulta_medicaContext())
-            {
+
                 switch (_permissionOperator)
                 {
                     case PermissionOperator.And:
@@ -77,7 +84,6 @@ namespace Consulta_medica.Sevurity
                         }
                         break;
                 }
-             }
 
              base.OnActionExecuting(context);
 

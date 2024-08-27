@@ -13,5 +13,6 @@ namespace Consulta_medica.Infrastructure.Interfaces
         IPacienteRepository Pacientes { get; }
         IPagosRepository Pagos { get; }
         IUserServiceRepository User { get; }
+        INotificationRepository Notification { get; } 
     }
 }

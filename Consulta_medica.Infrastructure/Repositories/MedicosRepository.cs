@@ -16,7 +16,7 @@ namespace Consulta_medica.Repository
     {
         private readonly consulta_medicaContext _context;
         private readonly IConfiguration _configuration;
-        public MedicosRepository(consulta_medicaContext context, IConfiguration configuration )
+        public MedicosRepository(consulta_medicaContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -31,7 +31,7 @@ namespace Consulta_medica.Repository
                 sDni = request.numFilter.Equals(0) ? request.textFilter : null,
                 sNombreMedico = request.numFilter.Equals(1) ? request.textFilter : null,
                 sCodigoMedico = request.numFilter.Equals(2) ? request.textFilter : null,
-                sFilterOne =  request.sFilterOne,
+                sFilterOne = request.sFilterOne,
                 sFilterTwo = request.sFilterTwo,
                 sUsuario = usuario
             };
@@ -41,7 +41,7 @@ namespace Consulta_medica.Repository
             return result;
         }
 
-        public async Task<(bool,string)> AddMedico(MedicoRequestDto request)
+        public async Task<(bool, string)> AddMedico(MedicoRequestDto request)
         {
             var codmed = (from c in _context.Medico
                           orderby c.Codmed descending
@@ -67,10 +67,10 @@ namespace Consulta_medica.Repository
             omedico.nEstado = (int)GenericEnumRepository.Activo;
             _context.Medico.Add(omedico);
             var result = await _context.SaveChangesAsync();
-    
+
             return (result > 0, omedico.Codmed);
         }
-        public async Task<Medico> BusinessHours(string Codmed) 
+        public async Task<Medico> BusinessHours(string Codmed)
         {
             var medico = await _context.Medico.FirstOrDefaultAsync(x => x.Codmed == Codmed);
 
@@ -85,7 +85,7 @@ namespace Consulta_medica.Repository
             return horarioObject;
         }
 
-        public async Task<bool> UpdateBodyHorario(string Codmed, string bodyMessage) 
+        public async Task<bool> UpdateBodyHorario(string Codmed, string bodyMessage)
         {
             var medico = await _context.Medico.FirstOrDefaultAsync(x => x.Codmed == Codmed);
 
@@ -121,11 +121,16 @@ namespace Consulta_medica.Repository
             return recordAffected > 0;
         }
 
-        public string getEmailMedico(string CodMed) 
+        public string getEmailMedico(string CodMed)
         {
             var result = _context.Medico.FirstOrDefault(x => x.Codmed.Equals(CodMed));
 
             return result.Correo;
+        }
+
+        public async Task<Medico> getById(string id_medico) 
+        {
+            return await _context.Medico.FirstOrDefaultAsync(x => x.Codmed == id_medico);
         }
     }
 }

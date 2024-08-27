@@ -1,4 +1,5 @@
 ﻿using Consulta_medica.Application.Interfaces;
+using Consulta_medica.Domain.DTOs.Request;
 using Consulta_medica.Dto.Request;
 using Consulta_medica.Enum;
 using Consulta_medica.Infrastructure.Interfaces;
@@ -16,10 +17,12 @@ namespace Consulta_medica.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ValidationCitas _validationCitas;
-        public CitasMedicasService(IUnitOfWork unitOfWork, ValidationCitas validationCitas) 
+        private readonly INotificationService _notificationService;
+        public CitasMedicasService(IUnitOfWork unitOfWork, ValidationCitas validationCitas, INotificationService notificationService) 
         {
             _unitOfWork = unitOfWork;
             _validationCitas = validationCitas;
+            _notificationService = notificationService;
         }
 
         public async Task<Response> GetCitas(RequestGenericFilter request, string usuario)
@@ -80,8 +83,13 @@ namespace Consulta_medica.Application.Services
 
                                 _unitOfWork.generarPDF.EnvioNotificationGeneric(resultado.Item2, "CITA PENDIENTE", resultado.Item1, null);
                             }
-
                         }
+                        // ENVIO DE NOTIFICACION POR PLATAFORMA
+                        NotificationRequestDto notificationRequestDto = new();
+                        notificationRequestDto.Message = _unitOfWork.generarPDF.MessageTemplate((int)EnumMessage.MESSAGE_NOTIFICATION_MEDICO_CITA).Replace("NOMBRE_PACIENTE", request.NombrePaciente).Replace("FECHA_CITA", request.Feccit.ToString("dd/MM/yyyy")).Replace("HORA_CITA", request.Hora);
+                        notificationRequestDto.id_medico_receptor = request.Codmed;
+                        notificationRequestDto.id_rol_receptor = (await _unitOfWork.Medicos.getById(request.Codmed)).Idtip;
+                        await _notificationService.sendNotificaction(notificationRequestDto);
                         response.data = ocitas;
                         response.mensaje = "Cita creada exitosamente";
                         response.exito = 1;
